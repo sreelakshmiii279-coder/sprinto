@@ -26,9 +26,18 @@ HUNTER_CACHE = os.path.join(HERE, "data", "hunter_cache.json")
 APOLLO_TODO = os.path.join(HERE, "data", "apollo_todo.csv")
 
 
+# Spelled-out titles -> the short forms used in config.ROLES_* ("Chief Executive Officer" -> "ceo").
+TITLE_ALIASES = {"chief executive officer": "ceo", "chief technology officer": "cto",
+                 "chief information security officer": "ciso", "chief security officer": "ciso",
+                 "vice president of engineering": "vp engineering", "vp of engineering": "vp engineering",
+                 "cofounder": "co-founder"}
+
+
 def _rank(title, size):
     roles = config.ROLES_SMALL if 0 <= size < 50 else config.ROLES_MID
     t = (title or "").lower()
+    for long, short in TITLE_ALIASES.items():
+        t = t.replace(long, short)
     for i, role in enumerate(roles):
         if role in t:
             return i
@@ -101,10 +110,13 @@ def _add_apollo_todo(domain, company):
         w.writerow([domain, company.get("company_name", ""), ", ".join(roles[:4])])
 
 
-def find_contact(domain, company):
-    """Returns (contact or None, explanation)."""
+def find_contact(domain, company, site_domain=None):
+    """Returns (contact or None, explanation). site_domain: where the website actually lives if it redirects
+    (e.g. zenduty.com -> xurrent.com after an acquisition); Hunter is searched there too if needed."""
     size = company.get("employee_estimate", -1)
-    sources = [("Apollo list", lambda: _from_csv(domain)), ("Hunter.io", lambda: _from_hunter(domain))]
+    hunter_domains = [domain] + ([site_domain] if site_domain and site_domain != domain else [])
+    sources = [("Apollo list", lambda: _from_csv(domain)),
+               ("Hunter.io", lambda: [c for d in hunter_domains for c in _from_hunter(d)])]
     if config.EXTRA_CONTACT_SOURCES:
         sources += [("company website", lambda: [{**p, "email": "", "source": "company website"}
                                                  for p in company.get("people", [])]),

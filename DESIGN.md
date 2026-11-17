@@ -15,12 +15,12 @@ or while building, and every rule below lives in `config.py` or the step file na
 | Step 1: scrape the prospect's website for raw signal | `scrape.py` | Done |
 | Step 2: extract structured company data from the raw content | `extract.py` (JSON, with quotes) | Done |
 | Step 3: qualify against the ICP, with an agent loop to fetch more when data is insufficient | `qualify.py` (evidence-map loop, capped) | Done |
-| Step 4: find the right PoC, option A Hunter.io Domain Search API | `contacts.py` `_from_hunter` (cached, qualified companies only) | Done; needs your `HUNTER_API_KEY` |
+| Step 4: find the right PoC, option A Hunter.io Domain Search API | `contacts.py` `_from_hunter` (cached, qualified companies only; also searches the domain a site redirects to) | Done; key set, verified 17 Nov (Zenduty → Laurens Pit, co-founder) |
 | Step 4: option B Apollo, looked up by hand and hardcoded | `data/contacts.csv` + `data/apollo_todo.csv` | Done; needs your lookups |
 | Step 5: the two most likely pain points for that person | `drafts.py` (exactly 2, each tied to evidence) | Done |
 | Step 6: personalised email, addressed by name, with a specific hook | `drafts.py` (checked in code: name, hook from evidence) | Done |
 | Step 7: send via Gmail, hardcoded to your own email | `send.py` `_via_gmail`, `TO_ADDRESS` | Done; needs your Gmail app password |
-| Done: an email lands in your inbox, to a real person by name, with a real hook | Verified 17 Nov 2026 (Zenduty email delivered) | Done |
+| Done: an email lands in your inbox, to a real person by name, with a real hook | Verified 17 Nov 2026: Zenduty email to Laurens Pit (found via Hunter.io), hook = their Bajaj Finserv Health case study | Done |
 | Done: you can defend every decision | `runs/run_log.jsonl` + `python report.py` | Done |
 
 Extras beyond the brief, all on by default and switchable:
@@ -122,7 +122,7 @@ domains.txt → 1 scrape (code) → 2 extract (LLM, facts + quotes) → 3 qualif
 ## 7. Known limits (be ready for these questions)
 
 - **JavaScript-only sites** (e.g. Hoppscotch) can't be read without a headless browser (10–15× the cost); they're flagged "unreadable" for a human instead.
-- **Acquisitions:** Zenduty now redirects to Xurrent; the funding found (2021 seed) may describe Zenduty before the acquisition. A human should sanity-check stage for redirected domains.
+- **Acquisitions:** Zenduty's pages now live on xurrent.com. Hunter has no one at zenduty.com, so the pipeline also searches the domain the site redirects to and finds Xurrent people; the funding (2021 seed) and size (~47) describe Zenduty before the acquisition. A human should sanity-check stage and size for redirected domains.
 - **Run-to-run variation:** the model can read the same page slightly differently (Twenty scored 45–60 across runs). Borderline scores near 60 deserve a human look.
 - **Contacts** always come from the brief's two sources first: Apollo (looked up by hand, `contacts.csv`) and Hunter.io (25 free searches/month, so it only searches qualified companies and caches results). Only when both have nobody suitable does it fall back to the website or a cited web search, and those contacts are labelled "verify before a real send" because they can be out of date.
 - **Next (post-Diwali build):** the S5 feedback loop (store the Growth Lead's edits with persona/stage tags, track a disagreement score) and the S6 reply agent (tools with 4-rule descriptions, a state object, a retry table).

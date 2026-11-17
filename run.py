@@ -12,6 +12,7 @@ import os
 import sys
 import time
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 import contacts
 import drafts
@@ -27,7 +28,10 @@ def process(domain, do_send=True):
     if q["status"] != "qualified":
         return row
 
-    contact, why = contacts.find_contact(domain, q["company"])
+    # If the pages we read live on another domain (a redirect or acquisition), Hunter is searched there too.
+    hosts = [urlparse(p["url"]).netloc.removeprefix("www.") for p in q["pages"] if p["ok"] and p["url"].startswith("http")]
+    site = next((h for h in hosts if h != domain), None)
+    contact, why = contacts.find_contact(domain, q["company"], site_domain=site)
     row.update(contact=contact, contact_reason=why)
     if not contact:
         row["status"] = "no_contact"

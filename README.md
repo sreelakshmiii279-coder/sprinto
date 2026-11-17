@@ -44,7 +44,7 @@ python report.py                # readable report in runs/report.md
   - **Gmail:** `GMAIL_ADDRESS` + `GMAIL_APP_PASSWORD` (myaccount.google.com/apppasswords, needs 2-Step Verification).
   - Neither: emails are saved to `outbox/`.
 - Step 4 needs **one** of these (the brief's two options):
-  - **Option A, Hunter.io:** `HUNTER_API_KEY` from hunter.io (free tier: 25 searches/month). Only qualified companies
+  - **Option A, Hunter.io:** `HUNTER_API_KEY` from hunter.io/api-keys (the case says 25 free searches/month; the free plan currently shows 50). Only qualified companies
     are searched, and results are cached in `data/hunter_cache.json`, so re-runs don't use up searches.
   - **Option B, Apollo:** look the person up on apollo.io and add a row to `data/contacts.csv`
     (`domain,name,title,email`). Qualified companies with no contact are listed in `data/apollo_todo.csv`,
@@ -56,11 +56,11 @@ Every line of the case brief, mapped to the file that does it: [DESIGN.md, secti
 
 ## Last run (17 Nov 2026, 9 domains, ~35 s each)
 
-Step 7 verified: the Zenduty email was delivered to my inbox through Resend.
+End to end verified: Hunter.io found Laurens Pit (co-founder) for Zenduty, and the email, opening with their Bajaj Finserv Health case study, was delivered to my inbox through Resend.
 
 | Company | Result | Why |
 |---|---|---|
-| Zenduty / Xurrent IMR | Emailed (75) | SaaS, seed, ~47 people, enterprise customers; email to co-founder & CEO opens with their Bajaj Finserv Health case study (contact found with the extra web-search source; with the brief's sources only, it waits in `apollo_todo.csv`) |
+| Zenduty / Xurrent IMR | Emailed (75) | SaaS, seed, ~47 people, enterprise customers; contact Laurens Pit (co-founder) via Hunter.io; email opens with their Bajaj Finserv Health case study |
 | Twenty | Held back (45–60) | Fits on paper, but has a trust page we couldn't read: may already be certified, check first |
 | SpotDraft, Rocketlane, Hevo, Airmeet, Formbricks | Dropped | Already SOC 2 certified (found on their security/trust pages) |
 | Postman | Dropped | Too late-stage |
