@@ -1,0 +1,8 @@
+.venv
+__pycache__
+runs
+outbox
+.env
+data/hunter_cache.json
+data/apollo_todo.csv
+.env.local

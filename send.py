@@ -11,6 +11,7 @@ from email.message import EmailMessage
 import requests
 
 import config
+import storage
 
 
 def _compose(domain, contact, subject, body):
@@ -50,8 +51,8 @@ def send(domain, contact, subject, body):
     msg = EmailMessage()
     msg["Subject"], msg["From"], msg["To"] = subj, config.TO_ADDRESS, config.TO_ADDRESS
     msg.set_content(text)
-    os.makedirs("outbox", exist_ok=True)
-    path = os.path.join("outbox", re.sub(r"[^a-z0-9.-]", "_", domain.lower()) + ".eml")
+    path = os.path.join(storage.WRITABLE, "outbox", re.sub(r"[^a-z0-9.-]", "_", domain.lower()) + ".eml")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "wb") as f:
         f.write(bytes(msg))
     return f"no Resend key or Gmail app password: saved to {path}"

@@ -4,6 +4,10 @@ MESA Term 2 · AI Case 02. Give it a list of company domains; for each one it de
 Sprinto's ICP, finds the right person, writes a personal cold email, and sends it **to your own inbox only**.
 Every decision and its reason is logged so you can defend it. Design and reasoning: [DESIGN.md](DESIGN.md).
 
+**Live app: https://sprinto-outreach-fawn.vercel.app**: paste domains, press Run, click any result to see why
+(facts and quotes, score, why this person, pain points, the email). Open to anyone with the link, so it's capped at
+30 companies per 24 hours to protect the Gemini, Hunter and Resend quotas; emails only ever go to our own inbox.
+
 ## The 7 steps, one file each
 
 | Step | File | What it does |
@@ -18,6 +22,18 @@ Every decision and its reason is logged so you can defend it. Design and reasoni
 | Report | `report.py` | Writes `runs/report.md`: why each company, why each person, what each hook is based on |
 
 Settings and business rules: `config.py`. Model calls: `llm.py`. Setup doctor: `check_setup.py`.
+Web app: `api/index.py` (Flask) + `web/index.html`, entry `app.py`. Storage: `storage.py` (Neon Postgres when
+`DATABASE_URL` is set, which Vercel needs; local files otherwise).
+
+## Deploy the web app (Vercel)
+
+```bash
+npx vercel link                 # once
+npx vercel env add GEMINI_API_KEY production   # and the rest of .env (DATABASE_URL is required on Vercel)
+npx vercel deploy --prod
+```
+
+Each company is one request (about 60-100 s); `vercel.json` allows up to 300 s.
 
 ## Run it
 

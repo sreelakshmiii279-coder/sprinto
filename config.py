@@ -2,7 +2,9 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Always this project's .env, whatever folder the program is started from. On Vercel there is no .env file;
+# settings come from the project's environment variables.
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 
 # --- Model (technical) ---
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
@@ -39,3 +41,8 @@ HUNTER_API_KEY = os.environ.get("HUNTER_API_KEY", "").strip()
 # Step 4 always tries the brief's sources first (Apollo list, then Hunter.io). "1" (default) then falls back to
 # named leaders on the company website and a cited web search; "0" = brief's sources only.
 EXTRA_CONTACT_SOURCES = os.environ.get("EXTRA_CONTACT_SOURCES", "1").strip() == "1"
+
+# Run history, Hunter cache, Apollo to-do list. Postgres when set (needed on Vercel), else local files.
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+# Web app: most companies it will process per 24 hours (protects Gemini / Hunter / Resend quotas).
+DAILY_RUN_CAP = int(os.environ.get("DAILY_RUN_CAP", "30"))

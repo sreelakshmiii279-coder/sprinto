@@ -12,18 +12,16 @@ Who counts as "right" depends on company size: under 50 people the founders own 
 above that it's security / engineering leadership. Never just the first "manager" on a list.
 """
 import csv
-import json
 import os
 
 import requests
 
 import config
 import llm
+import storage
 
 HERE = os.path.dirname(__file__)
 CONTACTS_CSV = os.path.join(HERE, "data", "contacts.csv")
-HUNTER_CACHE = os.path.join(HERE, "data", "hunter_cache.json")
-APOLLO_TODO = os.path.join(HERE, "data", "apollo_todo.csv")
 
 
 # Spelled-out titles -> the short forms used in config.ROLES_* ("Chief Executive Officer" -> "ceo").
@@ -59,21 +57,20 @@ def _from_hunter(domain):
     25 free monthly searches again. Only called for companies that already qualified."""
     if not config.HUNTER_API_KEY:
         return []
-    cache = json.load(open(HUNTER_CACHE, encoding="utf-8")) if os.path.exists(HUNTER_CACHE) else {}
-    if domain not in cache:
+    people = storage.hunter_get(domain)
+    if people is None:
         r = requests.get("https://api.hunter.io/v2/domain-search", timeout=config.TIMEOUT_S, params={
-            "domain": domain, "api_key": config.HUNTER_API_KEY, "seniority": "senior,executive", "limit": 10})
+            "domain": domain, "api_key": config.HUNTER_API_KEY, "limit": 10})
         if r.status_code == 429:
-            raise RuntimeError("Hunter.io: monthly search limit reached (free tier = 25). Use Apollo (contacts.csv).")
+            raise RuntimeError("Hunter.io: monthly search limit reached. Use Apollo (contacts.csv).")
         if r.status_code != 200:
             raise RuntimeError(f"Hunter.io HTTP {r.status_code}: {r.text[:150]}")
-        cache[domain] = [{"name": f"{e.get('first_name') or ''} {e.get('last_name') or ''}".strip(),
-                          "title": e.get("position") or "", "email": e.get("value") or "",
-                          "confidence": e.get("confidence")}
-                         for e in r.json().get("data", {}).get("emails", []) if e.get("first_name")]
-        with open(HUNTER_CACHE, "w", encoding="utf-8") as f:
-            json.dump(cache, f, indent=1)
-    return [{**c, "source": "Hunter.io"} for c in cache[domain]]
+        people = [{"name": f"{e.get('first_name') or ''} {e.get('last_name') or ''}".strip(),
+                   "title": e.get("position") or "", "email": e.get("value") or "",
+                   "confidence": e.get("confidence")}
+                  for e in r.json().get("data", {}).get("emails", []) if e.get("first_name")]
+        storage.hunter_put(domain, people)
+    return [{**c, "source": "Hunter.io"} for c in people]
 
 
 PEOPLE_SCHEMA = {"type": "object", "properties": {"people": {"type": "array", "items": {"type": "object",
@@ -97,17 +94,9 @@ def _from_search(domain, company):
 
 def _add_apollo_todo(domain, company):
     """A qualified company with no contact: list it so the Growth Lead can look the PoC up on Apollo."""
-    exists = os.path.exists(APOLLO_TODO)
-    rows = list(csv.DictReader(open(APOLLO_TODO, encoding="utf-8"))) if exists else []
-    if any(r["domain"] == domain for r in rows):
-        return
     size = company.get("employee_estimate", -1)
     roles = config.ROLES_SMALL if 0 <= size < 50 else config.ROLES_MID
-    with open(APOLLO_TODO, "a", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        if not exists:
-            w.writerow(["domain", "company", "look_for_roles"])
-        w.writerow([domain, company.get("company_name", ""), ", ".join(roles[:4])])
+    storage.apollo_todo_add(domain, company.get("company_name", ""), ", ".join(roles[:4]))
 
 
 def find_contact(domain, company, site_domain=None):
@@ -136,4 +125,4 @@ def find_contact(domain, company, site_domain=None):
     _add_apollo_todo(domain, company)
     hint = "" if config.HUNTER_API_KEY else " Add HUNTER_API_KEY to .env, or"
     return None, (f"no one with a compliance-owning role found ({tried}).{hint} look them up on Apollo: "
-                  "added to data/apollo_todo.csv, then put them in data/contacts.csv")
+                  "added to the Apollo to-do list, then put them in data/contacts.csv")

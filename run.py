@@ -4,10 +4,10 @@
     python run.py acme.com x.io   # just these
     python run.py --no-send       # stop after drafting (outbox only)
 
-Every decision, with its reason, goes to runs/run_log.jsonl - that file is how you defend the system.
+Every decision, with its reason, is logged (Postgres if DATABASE_URL is set, else runs/run_log.jsonl) -
+that log is how you defend the system.
 A failure on one domain is logged with its error and the run carries on; it never hides as a "no".
 """
-import json
 import os
 import sys
 import time
@@ -18,6 +18,7 @@ import contacts
 import drafts
 import qualify
 import send
+import storage
 
 
 def process(domain, do_send=True):
@@ -49,6 +50,18 @@ def process(domain, do_send=True):
     return row
 
 
+def run_one(domain, do_send=True):
+    """One company, end to end, logged. Used by the command line and the web app."""
+    t = time.time()
+    try:
+        row = process(domain, do_send)
+    except Exception as e:  # one company's failure must be visible, not silent, and not stop the run
+        row = {"domain": domain, "status": "error", "error": f"{type(e).__name__}: {e}"}
+    row["seconds"] = round(time.time() - t, 1)
+    storage.log_run(row)
+    return row
+
+
 def main(argv):
     do_send = "--no-send" not in argv
     domains = [a for a in argv if not a.startswith("--")]
@@ -56,24 +69,16 @@ def main(argv):
         with open(os.path.join("data", "domains.txt"), encoding="utf-8") as f:
             domains = [l.strip() for l in f if l.strip() and not l.startswith("#")]
 
-    os.makedirs("runs", exist_ok=True)
     results = []
     for domain in domains:
-        t = time.time()
-        try:
-            row = process(domain, do_send)
-        except Exception as e:  # one company's failure must be visible, not silent, and not stop the run
-            row = {"domain": domain, "status": "error", "error": f"{type(e).__name__}: {e}"}
-        row["seconds"] = round(time.time() - t, 1)
-        with open(os.path.join("runs", "run_log.jsonl"), "a", encoding="utf-8") as f:
-            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        row = run_one(domain, do_send)
         results.append(row)
         who = row.get("contact") or {}
         print(f"{domain:28} {row['status']:20} score={row.get('score')!s:5} "
               f"{who.get('name', ''):22} {row['seconds']}s", flush=True)
 
     print(f"\n{sum(r['status'] in ('emailed', 'drafted') for r in results)}/{len(results)} reached a draft. "
-          "Full reasons: runs/run_log.jsonl  |  Readable report: python report.py")
+          "Readable report: python report.py")
 
 
 if __name__ == "__main__":

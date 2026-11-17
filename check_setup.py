@@ -66,13 +66,13 @@ def apollo():
     path = os.path.join("data", "contacts.csv")
     rows = [r for r in csv.DictReader(open(path, encoding="utf-8")) if r.get("domain") and
             not r["domain"].startswith("#")] if os.path.exists(path) else []
-    todo = os.path.join("data", "apollo_todo.csv")
-    pending = max(0, sum(1 for _ in open(todo, encoding="utf-8")) - 1) if os.path.exists(todo) else 0
+    import storage
+    pending = len(storage.apollo_todo())
     if rows:
         return OK, f"{len(rows)} hand-picked contact(s) in data/contacts.csv" + \
-               (f"; {pending} more companies waiting in data/apollo_todo.csv" if pending else "")
+               (f"; {pending} more companies waiting on the Apollo to-do list" if pending else "")
     return MISSING, "no contacts in data/contacts.csv yet (option B)" + \
-           (f"; {pending} qualified companies listed in data/apollo_todo.csv to look up" if pending else "")
+           (f"; {pending} qualified companies on the Apollo to-do list to look up" if pending else "")
 
 
 def secrets():

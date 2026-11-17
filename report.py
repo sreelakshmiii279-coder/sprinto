@@ -1,7 +1,8 @@
-"""Turn the latest run of each domain in runs/run_log.jsonl into a readable report (runs/report.md):
+"""Turn the latest run of each domain (from the run log) into a readable report (runs/report.md):
 why each company qualified or not, why this person, and what the email's hook is based on."""
-import json
 import os
+
+import storage
 
 LABEL = {"emailed": "Emailed", "drafted": "Drafted", "qualified": "Qualified", "below_threshold": "Below threshold",
          "dropped": "Dropped", "unreadable": "Couldn't read site (needs a human)", "no_contact": "No contact found",
@@ -10,10 +11,8 @@ LABEL = {"emailed": "Emailed", "drafted": "Drafted", "qualified": "Qualified", "
 
 def main():
     latest = {}
-    with open(os.path.join("runs", "run_log.jsonl"), encoding="utf-8") as f:
-        for line in f:
-            row = json.loads(line)
-            latest[row["domain"]] = row
+    for row in reversed(storage.recent_runs(500)):  # oldest -> newest, so the latest run per domain wins
+        latest[row["domain"]] = row
     out = ["# Sprinto outreach: decision report\n"]
     for r in latest.values():
         c = r.get("company") or {}
@@ -44,6 +43,7 @@ def main():
         if r.get("send"):
             out.append(f"- **Send:** {r['send']}")
         out.append(f"- Took {r.get('seconds')}s\n")
+    os.makedirs("runs", exist_ok=True)
     with open(os.path.join("runs", "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(out))
     print("Wrote runs/report.md")

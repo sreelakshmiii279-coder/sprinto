@@ -5,3 +5,5 @@ runs/
 outbox/
 data/hunter_cache.json
 data/apollo_todo.csv
+.env.local
+.vercel

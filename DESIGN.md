@@ -28,6 +28,7 @@ Extras beyond the brief, all on by default and switchable:
 - **Contact fallback** to the company website and a cited web search when Apollo/Hunter have nobody (`EXTRA_CONTACT_SOURCES`), always labelled "verify before a real send".
 - **One cited web search** in the qualify loop for funding stage and headcount, which sites rarely state.
 - **Draft checks in code**, a **trust-page penalty**, **robots.txt politeness**, **Hunter quota cache**, **Apollo to-do list**, `check_setup.py`, and `report.py`.
+- **A web app on Vercel** (https://sprinto-outreach-fawn.vercel.app) that runs the same pipeline per domain and shows every decision; history and the Hunter cache live in Neon Postgres. No login, so a **daily cap of 30 companies** protects the quotas.
 
 ## 0b. Traps from the Advanced S1 deck, and how this build avoids them
 
