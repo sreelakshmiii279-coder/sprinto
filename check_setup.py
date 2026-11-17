@@ -29,6 +29,14 @@ def gemini():
 def gmail():
     if not config.TO_ADDRESS:
         return MISSING, "TO_ADDRESS (your own email) is not in .env"
+    if config.RESEND_API_KEY:
+        r = requests.get("https://api.resend.com/domains", timeout=15,
+                         headers={"Authorization": f"Bearer {config.RESEND_API_KEY}"})
+        # A send-only key is refused here with "restricted_api_key" - that still means the key is valid.
+        if r.status_code >= 400 and "restricted_api_key" not in r.text:
+            return FAIL, f"Resend rejected the key (HTTP {r.status_code})"
+        return OK, (f"Resend key works; emails go from {config.RESEND_FROM} to {config.TO_ADDRESS} "
+                    "(onboarding@resend.dev can only reach your Resend account's email)")
     if not config.GMAIL_APP_PASSWORD:
         return MISSING, ("GMAIL_APP_PASSWORD is empty, so emails go to outbox/ instead of your inbox. Create one at "
                          "myaccount.google.com/apppasswords (needs 2-Step Verification) and set GMAIL_ADDRESS to "

@@ -77,6 +77,7 @@ domains.txt → 1 scrape (code) → 2 extract (LLM, facts + quotes) → 3 qualif
 - **Why clean HTML before the model:** raw HTML is mostly menus and scripts; cleaning cuts tokens (and cost) by an order of magnitude or more.
 - **Why the contact depends on size:** under 50 people a founder owns compliance; above that, security/engineering leadership. Never "the first person with manager in their title".
 - **Why emails go to our own inbox:** the brief says so, and the human gate is the workflow change. `send.py` has no code path that uses the prospect's address.
+- **Why Resend instead of Gmail:** the brief names Gmail; Resend does the same job (an API call, no Gmail app password, which school accounts often block). Gmail still works as a fallback in `send.py`.
 - **Why drafts are checked in code:** first-name greeting, no placeholders, no hype words, under 140 words, and every hook/pain must point at a real evidence item. A draft that fails twice is not sent.
 
 ## 7. Known limits (be ready for these questions)

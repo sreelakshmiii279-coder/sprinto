@@ -29,6 +29,9 @@ ROLES_MID = ["ciso", "head of security", "security", "compliance", "grc", "cto",
 
 # --- Sending (SAFETY RULE) ---
 TO_ADDRESS = os.environ.get("TO_ADDRESS", "").strip()   # every email goes here and nowhere else
+# Step 7 senders: Resend first (no app password needed), then Gmail, else outbox/.
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "").strip()
+RESEND_FROM = os.environ.get("RESEND_FROM", "").strip() or "Sprinto Outreach <onboarding@resend.dev>"
 GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS", "").strip() or TO_ADDRESS
 GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "").strip()
 

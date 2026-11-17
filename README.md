@@ -13,7 +13,7 @@ Every decision and its reason is logged so you can defend it. Design and reasoni
 | 3 Qualify | `qualify.py` | Evidence-map loop (≤2 extra pages, 1 cited search), short circuits, 0–100 score vs 60 |
 | 4 Contact | `contacts.py` | Apollo list (option B) or Hunter.io (option A), as the brief asks; picks by role and company size |
 | 5–6 Draft | `drafts.py` | Two evidence-backed pain points, then a short email with a specific hook; checked in code |
-| 7 Send | `send.py` | Gmail to `TO_ADDRESS` only, or saves to `outbox/` if no Gmail app password |
+| 7 Send | `send.py` | Resend (or Gmail) to `TO_ADDRESS` only; saves to `outbox/` if neither is set up |
 | Run all | `run.py` | Runs every domain, logs to `runs/run_log.jsonl`, never hides a failure |
 | Report | `report.py` | Writes `runs/report.md`: why each company, why each person, what each hook is based on |
 
@@ -37,8 +37,12 @@ python report.py                # readable report in runs/report.md
 
 - `GEMINI_API_KEY`, `GEMINI_MODEL`: Google AI Studio key and model.
 - `TO_ADDRESS`: your own email. Every email goes here and nowhere else.
-- `GMAIL_ADDRESS` + `GMAIL_APP_PASSWORD`: to actually send through Gmail. Create an app password at
-  myaccount.google.com → Security → 2-Step Verification → App passwords. Without it, emails are saved to `outbox/`.
+- Step 7 sender (first one set is used):
+  - **Resend:** `RESEND_API_KEY` from resend.com (a send-only key is enough). With the default sender
+    `onboarding@resend.dev`, Resend only delivers to the email your Resend account is registered with, so
+    `TO_ADDRESS` must be that address (or verify a domain on Resend and set `RESEND_FROM`).
+  - **Gmail:** `GMAIL_ADDRESS` + `GMAIL_APP_PASSWORD` (myaccount.google.com/apppasswords, needs 2-Step Verification).
+  - Neither: emails are saved to `outbox/`.
 - Step 4 needs **one** of these (the brief's two options):
   - **Option A, Hunter.io:** `HUNTER_API_KEY` from hunter.io (free tier: 25 searches/month). Only qualified companies
     are searched, and results are cached in `data/hunter_cache.json`, so re-runs don't use up searches.
@@ -49,6 +53,8 @@ python report.py                # readable report in runs/report.md
   a cited web search.
 
 ## Last run (17 Nov 2026, 9 domains, ~35 s each)
+
+Step 7 verified: the Zenduty email was delivered to my inbox through Resend.
 
 | Company | Result | Why |
 |---|---|---|
