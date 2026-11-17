@@ -1,0 +1,11 @@
+# One company domain per line. Lines starting with # are ignored.
+# A deliberate mix, so you can watch the system judge: some fit, some are already certified, some are too big.
+zenduty.com
+twenty.com
+spotdraft.com
+rocketlane.com
+hevodata.com
+airmeet.com
+postman.com
+formbricks.com
+hoppscotch.io
