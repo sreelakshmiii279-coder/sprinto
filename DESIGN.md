@@ -84,5 +84,5 @@ domains.txt → 1 scrape (code) → 2 extract (LLM, facts + quotes) → 3 qualif
 - **JavaScript-only sites** (e.g. Hoppscotch) can't be read without a headless browser (10–15× the cost); they're flagged "unreadable" for a human instead.
 - **Acquisitions:** Zenduty now redirects to Xurrent; the funding found (2021 seed) may describe Zenduty before the acquisition. A human should sanity-check stage for redirected domains.
 - **Run-to-run variation:** the model can read the same page slightly differently (Twenty scored 45–60 across runs). Borderline scores near 60 deserve a human look.
-- **Contacts from web search** can be out of date; the source is logged so the Growth Lead can verify. Hunter.io or Apollo (in `contacts.csv`) take priority when present.
+- **Contacts** come only from the brief's two sources by default: Apollo (looked up by hand, `contacts.csv`) and Hunter.io (25 free searches/month, so it only searches qualified companies and caches results). Website / web-search contacts are an opt-in extra (`EXTRA_CONTACT_SOURCES=1`) because they can be out of date.
 - **Next (post-Diwali build):** the S5 feedback loop (store the Growth Lead's edits with persona/stage tags, track a disagreement score) and the S6 reply agent (tools with 4-rule descriptions, a state object, a retry table).
