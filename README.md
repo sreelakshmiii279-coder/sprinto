@@ -11,9 +11,9 @@ Every decision and its reason is logged so you can defend it. Design and reasoni
 | 1 Scrape | `scrape.py` | Fetches pages politely (robots.txt, honest user agent), strips menus/scripts, reports failures |
 | 2 Extract | `extract.py` | Model turns page text into company facts, each with a quote from the site |
 | 3 Qualify | `qualify.py` | Evidence-map loop (≤2 extra pages, 1 cited search), short circuits, 0–100 score vs 60 |
-| 4 Contact | `contacts.py` | Apollo list (option B) or Hunter.io (option A), as the brief asks; picks by role and company size |
+| 4 Contact | `contacts.py` | Apollo list (option B) and Hunter.io (option A) first, as the brief asks; then website / cited web search as a labelled fallback; picks by role and company size |
 | 5–6 Draft | `drafts.py` | Two evidence-backed pain points, then a short email with a specific hook; checked in code |
-| 7 Send | `send.py` | Resend (or Gmail) to `TO_ADDRESS` only; saves to `outbox/` if neither is set up |
+| 7 Send | `send.py` | Gmail (the brief's sender), else Resend, to `TO_ADDRESS` only; saves to `outbox/` if neither is set up |
 | Run all | `run.py` | Runs every domain, logs to `runs/run_log.jsonl`, never hides a failure |
 | Report | `report.py` | Writes `runs/report.md`: why each company, why each person, what each hook is based on |
 
@@ -37,7 +37,7 @@ python report.py                # readable report in runs/report.md
 
 - `GEMINI_API_KEY`, `GEMINI_MODEL`: Google AI Studio key and model.
 - `TO_ADDRESS`: your own email. Every email goes here and nowhere else.
-- Step 7 sender (first one set is used):
+- Step 7 sender (Gmail is used first when set, as the brief asks; Resend otherwise):
   - **Resend:** `RESEND_API_KEY` from resend.com (a send-only key is enough). With the default sender
     `onboarding@resend.dev`, Resend only delivers to the email your Resend account is registered with, so
     `TO_ADDRESS` must be that address (or verify a domain on Resend and set `RESEND_FROM`).
@@ -49,8 +49,10 @@ python report.py                # readable report in runs/report.md
   - **Option B, Apollo:** look the person up on apollo.io and add a row to `data/contacts.csv`
     (`domain,name,title,email`). Qualified companies with no contact are listed in `data/apollo_todo.csv`,
     with the roles to look for.
-- `EXTRA_CONTACT_SOURCES=1` (not in the brief, off by default): also try named leaders on the company's website and
-  a cited web search.
+- `EXTRA_CONTACT_SOURCES=1` (default; an extra beyond the brief): after Apollo and Hunter, fall back to named leaders
+  on the company's website and a cited web search. Set `0` to use only the brief's two sources.
+
+Every line of the case brief, mapped to the file that does it: [DESIGN.md, section 0](DESIGN.md).
 
 ## Last run (17 Nov 2026, 9 domains, ~35 s each)
 

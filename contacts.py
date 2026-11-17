@@ -4,8 +4,9 @@ The case allows two sources, and by default only these are used:
   Option A - Hunter.io Domain Search API (HUNTER_API_KEY; free tier = 25 searches/month)
   Option B - Apollo.io, looked up by hand and hardcoded in data/contacts.csv
 
-Set EXTRA_CONTACT_SOURCES=1 in .env to also try named leaders on the company's website and a cited web
-search (not part of the brief; useful when Hunter has no data for a small company).
+Those two are always tried first. With EXTRA_CONTACT_SOURCES=1 (the default) the step then falls back to named
+leaders on the company's website and a cited web search, an extra for when Hunter has no data on a small
+company or nobody has been looked up on Apollo yet. Set it to 0 to use only the brief's two sources.
 
 Who counts as "right" depends on company size: under 50 people the founders own compliance;
 above that it's security / engineering leadership. Never just the first "manager" on a list.
@@ -114,7 +115,10 @@ def find_contact(domain, company):
             best = min(ranked, key=lambda c: _rank(c["title"], size))
             band = "under 50 people, so a founder owns compliance" if 0 <= size < 50 else \
                    "50+ people (or unknown), so security/engineering leadership owns compliance"
-            return best, f"{best['name']} ({best['title']}) from {best['source']}: {band}"
+            why = f"{best['name']} ({best['title']}) from {best['source']}: {band}"
+            if best["source"] not in ("Hunter.io", "Apollo (looked up by hand)"):
+                why += ". Apollo/Hunter had nobody suitable, so this came from a fallback source: verify before a real send"
+            return best, why
 
     tried = ", ".join(name for name, _ in sources if name != "Hunter.io" or config.HUNTER_API_KEY)
     _add_apollo_todo(domain, company)

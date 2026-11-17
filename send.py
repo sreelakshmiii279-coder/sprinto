@@ -1,7 +1,7 @@
 """Step 7: send the email - only ever to TO_ADDRESS (your own inbox), never to the prospect.
 
-Senders, in order: Resend (RESEND_API_KEY), then Gmail (GMAIL_APP_PASSWORD). With neither, the email is
-written to outbox/ so you can still see exactly what would have gone out.
+Senders, in order: Gmail (GMAIL_APP_PASSWORD, as the brief asks), then Resend (RESEND_API_KEY, an extra that
+needs no app password). With neither, the email is written to outbox/ so you can still see what would go out.
 """
 import os
 import re
@@ -42,10 +42,10 @@ def send(domain, contact, subject, body):
     if not config.TO_ADDRESS:
         raise RuntimeError("TO_ADDRESS is not set in .env; refusing to send anywhere.")
     subj, text = _compose(domain, contact, subject, body)  # the prospect's address is never a recipient
-    if config.RESEND_API_KEY:
-        return _via_resend(subj, text)
-    if config.GMAIL_APP_PASSWORD:
+    if config.GMAIL_APP_PASSWORD:  # the brief's sender
         return _via_gmail(subj, text)
+    if config.RESEND_API_KEY:      # extra: same job through an API, no app password needed
+        return _via_resend(subj, text)
 
     msg = EmailMessage()
     msg["Subject"], msg["From"], msg["To"] = subj, config.TO_ADDRESS, config.TO_ADDRESS

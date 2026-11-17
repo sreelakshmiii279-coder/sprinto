@@ -36,5 +36,6 @@ GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS", "").strip() or TO_ADDRESS
 GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "").strip()
 
 HUNTER_API_KEY = os.environ.get("HUNTER_API_KEY", "").strip()
-# The brief allows Hunter.io or Apollo for step 4. "1" also tries the company website and a cited web search.
-EXTRA_CONTACT_SOURCES = os.environ.get("EXTRA_CONTACT_SOURCES", "0").strip() == "1"
+# Step 4 always tries the brief's sources first (Apollo list, then Hunter.io). "1" (default) then falls back to
+# named leaders on the company website and a cited web search; "0" = brief's sources only.
+EXTRA_CONTACT_SOURCES = os.environ.get("EXTRA_CONTACT_SOURCES", "1").strip() == "1"

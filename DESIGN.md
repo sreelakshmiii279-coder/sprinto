@@ -3,6 +3,45 @@
 MESA PGP C4 · Term 2 AI · Case 02 "Cold Outreach, at Scale" (3 Nov 2026). Everything here was decided before
 or while building, and every rule below lives in `config.py` or the step file named next to it.
 
+## 0. Case 02 checklist: every line of the brief, and where it lives
+
+| The brief asks | Where | Status |
+|---|---|---|
+| Identify which companies are the right fit for Sprinto | `qualify.py`, ICP in section 3 | Done |
+| "Right companies" is your definition, arrived at through research | Section 3 (short circuits + scoring table) | Done |
+| Find the right decision-maker at each company | `contacts.py` (role by company size) | Done |
+| Write and send a personalised cold email automatically | `drafts.py` + `send.py` | Done |
+| Repeatable: run on a list of domains, end to end, no decisions at each step | `data/domains.txt` → `python run.py` | Done |
+| Step 1: scrape the prospect's website for raw signal | `scrape.py` | Done |
+| Step 2: extract structured company data from the raw content | `extract.py` (JSON, with quotes) | Done |
+| Step 3: qualify against the ICP, with an agent loop to fetch more when data is insufficient | `qualify.py` (evidence-map loop, capped) | Done |
+| Step 4: find the right PoC, option A Hunter.io Domain Search API | `contacts.py` `_from_hunter` (cached, qualified companies only) | Done; needs your `HUNTER_API_KEY` |
+| Step 4: option B Apollo, looked up by hand and hardcoded | `data/contacts.csv` + `data/apollo_todo.csv` | Done; needs your lookups |
+| Step 5: the two most likely pain points for that person | `drafts.py` (exactly 2, each tied to evidence) | Done |
+| Step 6: personalised email, addressed by name, with a specific hook | `drafts.py` (checked in code: name, hook from evidence) | Done |
+| Step 7: send via Gmail, hardcoded to your own email | `send.py` `_via_gmail`, `TO_ADDRESS` | Done; needs your Gmail app password |
+| Done: an email lands in your inbox, to a real person by name, with a real hook | Verified 17 Nov 2026 (Zenduty email delivered) | Done |
+| Done: you can defend every decision | `runs/run_log.jsonl` + `python report.py` | Done |
+
+Extras beyond the brief, all on by default and switchable:
+- **Resend** as a second sender (works without a Gmail app password; Gmail is used first when set).
+- **Contact fallback** to the company website and a cited web search when Apollo/Hunter have nobody (`EXTRA_CONTACT_SOURCES`), always labelled "verify before a real send".
+- **One cited web search** in the qualify loop for funding stage and headcount, which sites rarely state.
+- **Draft checks in code**, a **trust-page penalty**, **robots.txt politeness**, **Hunter quota cache**, **Apollo to-do list**, `check_setup.py`, and `report.py`.
+
+## 0b. Traps from the Advanced S1 deck, and how this build avoids them
+
+| Trap in the S1 sample repo | Here |
+|---|---|
+| Score 0-100 compared with a 0.7 threshold | Score and `QUALIFY_THRESHOLD` are both 0-100 (`config.py`) |
+| Bare `except` turns a failed scrape into an empty page, which scores 0 | Failures carry a reason; an unreadable site is `unreadable` (needs a human), never 0 |
+| Invented library call (`hunter.find_decision_maker`) | Calls Hunter's documented REST endpoint `/v2/domain-search` directly |
+| "It retries" vs "it fetches more" | The loop fetches more pages (capped); model calls retry only on transient errors (`llm.py`) |
+| Temperature 0.7 for extracting facts | Extraction runs at 0.0; only drafting uses 0.4 |
+| Period mismatch (weekly vs monthly) | All timings are seconds per company, per run; the outcome is stated per week |
+| Wrong recipient / no confirmation | One hardcoded recipient (`TO_ADDRESS`); the prospect's address is never used |
+| Key in git | `.env` is git-ignored; `check_setup.py` verifies it |
+
 ## 1. The 9 checks: does this deserve to be built?
 
 | # | Check | Answer |
@@ -77,7 +116,7 @@ domains.txt → 1 scrape (code) → 2 extract (LLM, facts + quotes) → 3 qualif
 - **Why clean HTML before the model:** raw HTML is mostly menus and scripts; cleaning cuts tokens (and cost) by an order of magnitude or more.
 - **Why the contact depends on size:** under 50 people a founder owns compliance; above that, security/engineering leadership. Never "the first person with manager in their title".
 - **Why emails go to our own inbox:** the brief says so, and the human gate is the workflow change. `send.py` has no code path that uses the prospect's address.
-- **Why Resend instead of Gmail:** the brief names Gmail; Resend does the same job (an API call, no Gmail app password, which school accounts often block). Gmail still works as a fallback in `send.py`.
+- **Why Gmail first, Resend second:** the brief names Gmail, so Gmail is used whenever its app password is set. Resend is an extra that does the same job through an API with no app password (school accounts often block those); it's what delivered the verified test email.
 - **Why drafts are checked in code:** first-name greeting, no placeholders, no hype words, under 140 words, and every hook/pain must point at a real evidence item. A draft that fails twice is not sent.
 
 ## 7. Known limits (be ready for these questions)
@@ -85,5 +124,5 @@ domains.txt → 1 scrape (code) → 2 extract (LLM, facts + quotes) → 3 qualif
 - **JavaScript-only sites** (e.g. Hoppscotch) can't be read without a headless browser (10–15× the cost); they're flagged "unreadable" for a human instead.
 - **Acquisitions:** Zenduty now redirects to Xurrent; the funding found (2021 seed) may describe Zenduty before the acquisition. A human should sanity-check stage for redirected domains.
 - **Run-to-run variation:** the model can read the same page slightly differently (Twenty scored 45–60 across runs). Borderline scores near 60 deserve a human look.
-- **Contacts** come only from the brief's two sources by default: Apollo (looked up by hand, `contacts.csv`) and Hunter.io (25 free searches/month, so it only searches qualified companies and caches results). Website / web-search contacts are an opt-in extra (`EXTRA_CONTACT_SOURCES=1`) because they can be out of date.
+- **Contacts** always come from the brief's two sources first: Apollo (looked up by hand, `contacts.csv`) and Hunter.io (25 free searches/month, so it only searches qualified companies and caches results). Only when both have nobody suitable does it fall back to the website or a cited web search, and those contacts are labelled "verify before a real send" because they can be out of date.
 - **Next (post-Diwali build):** the S5 feedback loop (store the Growth Lead's edits with persona/stage tags, track a disagreement score) and the S6 reply agent (tools with 4-rule descriptions, a state object, a retry table).
