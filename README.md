@@ -8,6 +8,12 @@ Every decision and its reason is logged so you can defend it. Design and reasoni
 (facts and quotes, score, why this person, pain points, the email). Open to anyone with the link, so it's capped at
 30 companies per 24 hours to protect the Gemini, Hunter and Resend quotas; emails only ever go to our own inbox.
 
+## Components map
+
+[docs/components-map.svg](docs/components-map.svg) (also [PNG](docs/components-map.png) and [PDF](docs/components-map.pdf))
+
+![Components map](docs/components-map.svg)
+
 ## The 7 steps, one file each
 
 | Step | File | What it does |
