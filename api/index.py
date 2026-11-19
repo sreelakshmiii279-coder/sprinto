@@ -23,9 +23,13 @@ DOMAIN_RE = re.compile(r"^(?=.{4,253}$)([a-z0-9-]{1,63}\.)+[a-z]{2,24}$")
 
 
 def clean_domain(raw):
-    d = (raw or "").strip().lower()
-    d = re.sub(r"^https?://", "", d).split("/")[0].removeprefix("www.")
-    return d if DOMAIN_RE.match(d) else None
+    """A pasted URL or domain -> bare domain ("HTTPS://www.Acme.com:443/pricing#x" -> "acme.com"), or None."""
+    if not isinstance(raw, str):  # numbers, lists, null from direct API calls
+        return None
+    d = raw.strip().lower()
+    d = re.sub(r"^https?://", "", d)
+    d = re.split(r"[/?#]", d)[0].split(":")[0].removeprefix("www.").rstrip(".")
+    return d if DOMAIN_RE.match(d) and ".." not in d else None
 
 
 @app.get("/")

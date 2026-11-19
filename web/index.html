@@ -9,24 +9,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #fff6fa; --card: #ffffff; --card-2: #fdeef5; --text: #2a1020; --muted: #8a5f75; --line: #f5d9e6;
-  --accent: #db2777; --accent-soft: #fde7f1; --ok: #047857; --ok-soft: #e7f6ef; --warn: #b45309; --warn-soft: #fdf3e3;
-  --bad: #be123c; --bad-soft: #fde8ee; --info: #a21caf; --info-soft: #fae8fb;
-  --grad: linear-gradient(135deg, #db2777 0%, #ec4899 55%, #c084fc 100%);
+  --bg: #0b0b0c; --card: #151514; --card-2: #1d1c19; --text: #f5efe0; --muted: #a89f8a; --line: #2e2a21;
+  --accent: #d4af37; --accent-soft: #2b2411; --ok: #6ee7b7; --ok-soft: #10261f; --warn: #fbbf24; --warn-soft: #2b2210;
+  --bad: #f87171; --bad-soft: #2d1515; --info: #e9c46a; --info-soft: #2a2412;
+  --grad: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #f3d98b 100%);
+  color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #170a12; --card: #211019; --card-2: #2b1422; --text: #fdf2f8; --muted: #c9a3b8; --line: #3d1d2f;
-  --accent: #f472b6; --accent-soft: #3d1630; --ok: #34d399; --ok-soft: #10302a; --warn: #fbbf24; --warn-soft: #332611;
-  --bad: #fb7185; --bad-soft: #3a1520; --info: #e879f9; --info-soft: #34163a;
-  --grad: linear-gradient(135deg, #ec4899 0%, #f472b6 55%, #c084fc 100%); } }
+  --bg: #0b0b0c; --card: #151514; --card-2: #1d1c19; --text: #f5efe0; --muted: #a89f8a; --line: #2e2a21;
+  --accent: #d4af37; --accent-soft: #2b2411; --ok: #6ee7b7; --ok-soft: #10261f; --warn: #fbbf24; --warn-soft: #2b2210;
+  --bad: #f87171; --bad-soft: #2d1515; --info: #e9c46a; --info-soft: #2a2412;
+  --grad: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #f3d98b 100%);
+  color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #170a12; --card: #211019; --card-2: #2b1422; --text: #fdf2f8; --muted: #c9a3b8; --line: #3d1d2f;
-  --accent: #f472b6; --accent-soft: #3d1630; --ok: #34d399; --ok-soft: #10302a; --warn: #fbbf24; --warn-soft: #332611;
-  --bad: #fb7185; --bad-soft: #3a1520; --info: #e879f9; --info-soft: #34163a;
-  --grad: linear-gradient(135deg, #ec4899 0%, #f472b6 55%, #c084fc 100%); }
+  --bg: #0b0b0c; --card: #151514; --card-2: #1d1c19; --text: #f5efe0; --muted: #a89f8a; --line: #2e2a21;
+  --accent: #d4af37; --accent-soft: #2b2411; --ok: #6ee7b7; --ok-soft: #10261f; --warn: #fbbf24; --warn-soft: #2b2210;
+  --bad: #f87171; --bad-soft: #2d1515; --info: #e9c46a; --info-soft: #2a2412;
+  --grad: linear-gradient(135deg, #a67c00 0%, #d4af37 50%, #f3d98b 100%);
+  color-scheme: dark; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 Inter, system-ui, sans-serif;
-  background-image: radial-gradient(70% 35% at 50% -5%, rgba(236, 72, 153, 0.16), transparent 70%); background-attachment: fixed; min-height: 100vh; }
+  background-image: radial-gradient(70% 35% at 50% -5%, rgba(212, 175, 55, 0.10), transparent 70%); background-attachment: fixed; min-height: 100vh; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 16px 60px; }
 h1 { font-size: 30px; margin: 0; letter-spacing: -0.02em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
 h2 { font-size: 17px; margin: 0 0 12px; }
@@ -34,7 +37,7 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 22px; }
 .chip { font-size: 12.5px; padding: 4px 10px; border-radius: 99px; background: var(--card); border: 1px solid var(--line); color: var(--muted); }
 .chip b { color: var(--accent); font-weight: 600; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 18px; box-shadow: 0 10px 30px rgba(219, 39, 119, 0.06); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 18px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); }
 .steps { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
 .step { background: var(--card-2); border-radius: 10px; padding: 10px; font-size: 12.5px; }
 .step b { display: block; font-size: 13px; margin-bottom: 2px; color: var(--accent); }
@@ -45,7 +48,7 @@ textarea { width: 100%; min-height: 120px; resize: vertical; border: 1px solid v
   border-radius: 10px; padding: 10px 12px; font: 14px/1.5 ui-monospace, Menlo, Consolas, monospace; }
 .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .between { justify-content: space-between; }
-button { font: inherit; border: 0; border-radius: 12px; padding: 11px 20px; background: var(--grad); color: #fff; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(236, 72, 153, 0.25); }
+button { font: inherit; border: 0; border-radius: 12px; padding: 11px 20px; background: var(--grad); color: #17130a; font-weight: 700; cursor: pointer; box-shadow: 0 8px 22px rgba(212, 175, 55, 0.22); }
 button:disabled { opacity: .55; cursor: not-allowed; }
 button.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); font-weight: 500; box-shadow: none; }
 label.check { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; }
@@ -217,8 +220,23 @@ async function loadMeta(first) {
 
 $('go').addEventListener('click', async () => {
   $('err').textContent = '';
-  const domains = $('domains').value.split(/\s+/).map((d) => d.trim()).filter(Boolean);
-  if (!domains.length) { $('err').textContent = 'Add at least one domain, e.g. acme.com'; return; }
+  // Same clean-up as the server: "HTTPS://www.Acme.com/pricing" -> "acme.com". Split on spaces, commas,
+  // semicolons or new lines; drop duplicates; flag anything that isn't a domain before running.
+  const clean = (raw) => raw.trim().toLowerCase().replace(/^https?:\/\//, '').split(/[/?#]/)[0].split(':')[0]
+    .replace(/^www\./, '').replace(/\.$/, '');
+  const ok = (d) => /^(?=.{4,253}$)([a-z0-9-]{1,63}\.)+[a-z]{2,24}$/.test(d) && !d.includes('..');
+  const entries = $('domains').value.split(/[\s,;|]+/).filter(Boolean);
+  const bad = entries.filter((e) => !ok(clean(e)));
+  const domains = [...new Set(entries.map(clean).filter(ok))];
+  const dupes = entries.filter((e) => ok(clean(e))).length - domains.length;
+  if (!domains.length) {
+    $('err').textContent = bad.length ? `Not company domains: ${bad.slice(0, 5).join(', ')}. Use the form acme.com` : 'Add at least one domain, e.g. acme.com';
+    return;
+  }
+  const notes = [];
+  if (bad.length) notes.push(`Skipped, not domains: ${bad.slice(0, 5).join(', ')}${bad.length > 5 ? '…' : ''}`);
+  if (dupes) notes.push(`${dupes} duplicate${dupes > 1 ? 's' : ''} removed`);
+  $('err').textContent = notes.join(' · ');
   $('go').disabled = true;
   open = null;
   for (const domain of domains) {
@@ -234,7 +252,7 @@ $('go').addEventListener('click', async () => {
       clearInterval(tick);
       if (!res.ok) {
         runsCache.shift();
-        $('err').textContent = `${domain}: ${data.error || 'failed'}`;
+        $('err').textContent = [$('err').textContent, `${domain}: ${data.error || 'failed'}`].filter(Boolean).join(' · ');
         render();
         if (res.status === 429) break;
         continue;

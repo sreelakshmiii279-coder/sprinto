@@ -58,6 +58,17 @@ def fetch(url):
         return page
     try:
         r = requests.get(url, headers={"User-Agent": config.USER_AGENT}, timeout=config.TIMEOUT_S)
+    except requests.exceptions.SSLError:
+        page["reason"] = "the site's secure connection (HTTPS certificate) failed"
+        return page
+    except requests.exceptions.Timeout:
+        page["reason"] = f"the site didn't respond within {config.TIMEOUT_S} s"
+        return page
+    except requests.exceptions.ConnectionError as e:
+        dns = any(s in str(e) for s in ("NameResolution", "getaddrinfo", "Name or service not known", "nodename nor servname"))
+        page["reason"] = "this domain doesn't exist or has no website (check the spelling)" if dns \
+            else "couldn't connect to the site"
+        return page
     except requests.RequestException as e:
         page["reason"] = f"network error: {type(e).__name__}"
         return page
@@ -74,7 +85,8 @@ def fetch(url):
     page["text"] = _clean(soup)
     page["url"] = r.url
     if len(page["text"]) < 200:
-        page["reason"] = "page has almost no readable text (likely built with JavaScript)"
+        page["reason"] = ("page has almost no readable text: a placeholder or parked page, "
+                          "or a site built entirely with JavaScript")
         return page
     page["ok"] = True
     return page
